@@ -14,49 +14,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class StaticInstrumenter {
-
-  public static class BytesAndName {
-    public byte[] bytes;
-    public String name;
-
-    public BytesAndName(final byte[] bytes, final String name) {
-      this.bytes = bytes;
-      this.name = name;
-    }
-
-  }
-
   // FIXME classloaders in use by loaded jars, classloader as key
   // key is slashy name, not dotty
   public static final Map<String, byte[]> InstrumentedClasses = new ConcurrentHashMap<>();
 
   public static final ThreadLocal<BytesAndName> CurrentClass = new ThreadLocal<>();
-
-  public static class PreTransformer implements ClassFileTransformer {
-    @Override
-    public byte[] transform(final ClassLoader loader, final String className,
-        final Class<?> classBeingRedefined,
-        final ProtectionDomain protectionDomain, final byte[] classfileBuffer)
-        throws IllegalClassFormatException {
-      CurrentClass.set(new BytesAndName(classfileBuffer, className));
-      return null;
-    }
-  }
-
-  public static class PostTransformer implements ClassFileTransformer {
-    @Override
-    public byte[] transform(final ClassLoader loader, final String className,
-        final Class<?> classBeingRedefined,
-        final ProtectionDomain protectionDomain, final byte[] classfileBuffer)
-        throws IllegalClassFormatException {
-      final BytesAndName pre = CurrentClass.get();
-      if (pre != null && pre.name.equals(className) && !Arrays.equals(pre.bytes, classfileBuffer)) {
-        InstrumentedClasses.put(className, classfileBuffer);
-      }
-      return null;
-    }
-
-  }
 
   public static ClassFileTransformer getPreTransformer() {
     return new PreTransformer();
