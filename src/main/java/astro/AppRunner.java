@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class AppRunner {
 
     public static void main(String[] args) {
-        AstroClient client = new AstroClient();
 
+        AstroClient client = new AstroClient();
 
         for(String name : StaticInstrumenter.InstrumentedClasses.keySet()){
             System.out.println("Name=" + name);

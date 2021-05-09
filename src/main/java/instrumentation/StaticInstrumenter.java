@@ -31,6 +31,9 @@ public class StaticInstrumenter {
   // Above happens in -javaagent-space, below in main-space
   public static void main(final String[] args) throws Exception {
 
+    System.out.println("CLASSPATH: " + System.getProperty("java.class.path"));
+
+
     // FIXME error handling, user niceties, etc.
     final File outDir = new File(args[0]);
     if (!outDir.exists()) {
