@@ -1,6 +1,8 @@
 package loader;
 
 import instrumentation.*;
+import advices.OpenTelemetryAgentAdvices;
+import advices.PrintingAdvices;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.asm.Advice;
 import java.io.File;
@@ -18,6 +20,7 @@ public class OpenTelemetryLoader {
     public static Class<?> openTelemetryAgentClass;
 
     public static final String OTEL_AGENT_NAME = "io.opentelemetry.javaagent.OpenTelemetryAgent";
+    public static final String OTEL_JAR_PATH = "opentelemetry-javaagent-all.jar";
 
     public static synchronized void loadOtel(File otelJar){
 
@@ -48,7 +51,7 @@ public class OpenTelemetryLoader {
                     )
             )
             .make()
-            .inject(new File(System.getProperty("user.dir") + "/src/main/resources/opentelemetry-javaagent-all.jar"));
+            .inject(new File(OTEL_JAR_PATH));
 //                .load(ClassLoader.getSystemClassLoader())
 //                .getLoaded();
     }
@@ -70,7 +73,7 @@ public class OpenTelemetryLoader {
                     .rebase(clazz)
                     .name("io.opentelemetry.javaagent." + clazzName)
                     .make()
-                    .inject(new File(System.getProperty("user.dir") + "/src/main/resources/opentelemetry-javaagent-all.jar"));
+                    .inject(new File(OTEL_JAR_PATH));
             System.out.println("Instrumented " + clazzName);
         }
 
@@ -78,7 +81,7 @@ public class OpenTelemetryLoader {
 
     public static void main(String[] args) throws NoSuchMethodException, IOException {
 
-        loadOtel(new File(System.getProperty("user.dir") + "/src/main/resources/opentelemetry-javaagent-all.jar"));
+        loadOtel(new File(OTEL_JAR_PATH));
         instrumentOpenTelemetryAgent();
         injectClasses();
 
