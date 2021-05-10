@@ -31,7 +31,7 @@ public class StaticInstrumenter {
   // Above happens in -javaagent-space, below in main-space
   public static void main(final String[] args) throws Exception {
 
-    System.out.println("CLASSPATH: " + System.getProperty("java.class.path"));
+    System.out.println("[CLASSPATH] " + System.getProperty("java.class.path"));
 
 
     // FIXME error handling, user niceties, etc.
@@ -42,6 +42,7 @@ public class StaticInstrumenter {
 
     for (final String pathItem : System.getProperty("java.class.path")
         .split(System.getProperty("path.separator"))) {
+      System.out.println("[PATH_ITEM] " + pathItem);
       // FIXME java 9 / jmod support, proper handling of directories, just generally better and more resilient stuff
       // FIXME jmod in particular introduces weirdness with adding helpers to the dependencies
       if (pathItem.endsWith(".jar")) {
@@ -55,6 +56,7 @@ public class StaticInstrumenter {
   }
 
   private static void processJar(final File jar, final File outDir) throws Exception {
+    System.out.println("[processJar] " + jar.getName());
     // FIXME don't "instrument" our agent jar.
     final File outFile = new File(outDir, jar.getName()); // FIXME multiple jars with same name
     // FIXME detect and warn on signed jars (and drop the signing bits)
@@ -69,6 +71,7 @@ public class StaticInstrumenter {
       InputStream entryIn = null;
       if (name.endsWith(".class") && !shouldSkip(name)) {
         final String className = name.substring(0, name.indexOf(".class")).replace('/', '.');
+        System.out.println("[className] " + className);
         try {
           final Class c = Class.forName(className, false, ClassLoader.getSystemClassLoader());
           final byte[] modified = InstrumentedClasses.get(className.replace('.', '/'));

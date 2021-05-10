@@ -12,6 +12,7 @@ public class PostTransformer implements ClassFileTransformer {
         final ProtectionDomain protectionDomain, final byte[] classfileBuffer)
         throws IllegalClassFormatException {
         final BytesAndName pre = StaticInstrumenter.CurrentClass.get();
+        System.out.println("[PostTransformer] " + className);
         if (pre != null && pre.name.equals(className) && !Arrays.equals(pre.bytes, classfileBuffer)) {
             StaticInstrumenter.InstrumentedClasses.put(className, classfileBuffer);
         }

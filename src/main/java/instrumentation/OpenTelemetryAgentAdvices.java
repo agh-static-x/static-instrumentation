@@ -9,7 +9,7 @@ public class OpenTelemetryAgentAdvices {
     static long enter(@Advice.Origin String origin,
                       @Advice.Origin("#t #m") String detailedOrigin,
                       @Advice.Argument(value = 1, readOnly = false) Instrumentation inst) {
-//        System.out.println("[INSTRUMENTATION] ENTER " + detailedOrigin);
+        System.out.println("[OpenTelemetryAgentAdvices] ENTER" + detailedOrigin);
 
         inst.addTransformer(StaticInstrumenter.getPreTransformer());
         return System.nanoTime();
@@ -20,7 +20,7 @@ public class OpenTelemetryAgentAdvices {
     static void exit(@Advice.Origin String origin,
                      @Advice.Origin("#t #m") String detailedOrigin,
                      @Advice.Argument(value = 1, readOnly = false) Instrumentation inst) {
-//        System.out.println("[INSTRUMENTATION] EXIT " + detailedOrigin);
+        System.out.println("[OpenTelemetryAgentAdvices] EXIT " + detailedOrigin);
         inst.addTransformer(StaticInstrumenter.getPostTransformer());
     }
 }
