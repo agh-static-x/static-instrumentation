@@ -1,4 +1,5 @@
-package instrumentation;
+package advices;
+import instrumentation.StaticInstrumenter;
 import net.bytebuddy.asm.Advice;
 
 import java.lang.instrument.Instrumentation;
