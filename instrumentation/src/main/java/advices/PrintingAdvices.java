@@ -1,8 +1,6 @@
-package instrumentation;
+package advices;
 
 import net.bytebuddy.asm.Advice;
-
-import java.lang.instrument.Instrumentation;
 
 public class PrintingAdvices {
 
