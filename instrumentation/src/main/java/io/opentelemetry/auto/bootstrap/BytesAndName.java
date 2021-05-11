@@ -1,4 +1,4 @@
-package instrumentation;
+package io.opentelemetry.auto.bootstrap;
 
 public class BytesAndName {
     public byte[] bytes;

@@ -1,6 +1,11 @@
-package instrumentation;
+package io.opentelemetry.auto.bootstrap;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -31,9 +36,6 @@ public class StaticInstrumenter {
   // Above happens in -javaagent-space, below in main-space
   public static void main(final String[] args) throws Exception {
 
-    System.out.println("CLASSPATH: " + System.getProperty("java.class.path"));
-
-
     // FIXME error handling, user niceties, etc.
     final File outDir = new File(args[0]);
     if (!outDir.exists()) {
@@ -41,7 +43,7 @@ public class StaticInstrumenter {
     }
 
     for (final String pathItem : System.getProperty("java.class.path")
-        .split(System.getProperty("path.separator"))) {
+            .split(System.getProperty("path.separator"))) {
       // FIXME java 9 / jmod support, proper handling of directories, just generally better and more resilient stuff
       // FIXME jmod in particular introduces weirdness with adding helpers to the dependencies
       if (pathItem.endsWith(".jar")) {

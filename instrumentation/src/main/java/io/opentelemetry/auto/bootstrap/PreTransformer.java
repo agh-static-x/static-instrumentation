@@ -1,4 +1,4 @@
-package instrumentation;
+package io.opentelemetry.auto.bootstrap;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -10,7 +10,7 @@ public class PreTransformer implements ClassFileTransformer {
         final Class<?> classBeingRedefined,
         final ProtectionDomain protectionDomain, final byte[] classfileBuffer)
         throws IllegalClassFormatException {
-        StaticInstrumenter.CurrentClass.set(new BytesAndName(classfileBuffer, className));
+        io.opentelemetry.auto.bootstrap.StaticInstrumenter.CurrentClass.set(new BytesAndName(classfileBuffer, className));
         return null;
     }
 }

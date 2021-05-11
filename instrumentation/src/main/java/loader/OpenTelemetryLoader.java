@@ -1,8 +1,12 @@
 package loader;
 
-import instrumentation.*;
+import advices.InstallBootstrapJarAdvice;
 import advices.OpenTelemetryAgentAdvices;
 import advices.PrintingAdvices;
+import io.opentelemetry.auto.bootstrap.BytesAndName;
+import io.opentelemetry.auto.bootstrap.PostTransformer;
+import io.opentelemetry.auto.bootstrap.PreTransformer;
+import io.opentelemetry.auto.bootstrap.StaticInstrumenter;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.asm.Advice;
 import java.io.File;
@@ -10,6 +14,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
@@ -19,8 +24,8 @@ public class OpenTelemetryLoader {
     public static URLClassLoader otelClassLoader;
     public static Class<?> openTelemetryAgentClass;
 
-    public static final String OTEL_AGENT_NAME = "io.opentelemetry.javaagent.OpenTelemetryAgent";
-    public static final String OTEL_JAR_PATH = "opentelemetry-javaagent-all.jar";
+    public static final String OTEL_AGENT_NAME = "io.opentelemetry.auto.bootstrap.AgentBootstrap";
+    public static final String OTEL_JAR_PATH = System.getProperty("user.dir") + "/instrumentation/src/main/resources/pure-old-otel.jar";
 
     public static synchronized void loadOtel(File otelJar){
 
@@ -43,11 +48,16 @@ public class OpenTelemetryLoader {
     public static void instrumentOpenTelemetryAgent() throws IOException {
             new ByteBuddy()
             .rebase(openTelemetryAgentClass)
-            .visit(Advice.to(PrintingAdvices.class).on(isMethod()))
+//            .visit(Advice.to(PrintingAdvices.class).on(isMethod()))
             .visit(Advice.to(OpenTelemetryAgentAdvices.class).on(
                     isMethod()
                             .and(named("agentmain"))
-                            .and(takesArguments(2))
+//                            .and(takesArguments(2))
+                    )
+            )
+            .visit(Advice.to(InstallBootstrapJarAdvice.class).on(
+                    isMethod()
+                            .and(named("installBootstrapJar"))
                     )
             )
             .make()
@@ -67,11 +77,13 @@ public class OpenTelemetryLoader {
 
         for(var clazz : classesToInject) {
 
-            String clazzName = clazz.getName().split("\\.")[1];
+            String[] name = clazz.getName().split("\\.");
+
+            String clazzName = name[name.length - 1];
 
             new ByteBuddy()
                     .rebase(clazz)
-                    .name("io.opentelemetry.javaagent." + clazzName)
+                    .name("io.opentelemetry.auto.bootstrap." + clazzName)
                     .make()
                     .inject(new File(OTEL_JAR_PATH));
             System.out.println("Instrumented " + clazzName);
@@ -79,7 +91,7 @@ public class OpenTelemetryLoader {
 
     }
 
-    public static void main(String[] args) throws NoSuchMethodException, IOException {
+    public static void main(String[] args) throws IOException {
 
         loadOtel(new File(OTEL_JAR_PATH));
         instrumentOpenTelemetryAgent();

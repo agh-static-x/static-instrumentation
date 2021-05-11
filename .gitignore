@@ -6,3 +6,4 @@
 /static-instrumentation.jar
 /run.sh
 /instrumentation/src/main/resources/opentelemetry-javaagent-all.jar
+/test-app.jar

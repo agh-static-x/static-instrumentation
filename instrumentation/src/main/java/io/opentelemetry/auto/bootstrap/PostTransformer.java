@@ -1,4 +1,4 @@
-package instrumentation;
+package io.opentelemetry.auto.bootstrap;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
