@@ -1,8 +1,12 @@
 package loader;
 
-import instrumentation.*;
+import advices.InstallBootstrapJarAdvice;
 import advices.OpenTelemetryAgentAdvices;
 import advices.PrintingAdvices;
+import io.opentelemetry.javaagent.BytesAndName;
+import io.opentelemetry.javaagent.PostTransformer;
+import io.opentelemetry.javaagent.PreTransformer;
+import io.opentelemetry.javaagent.StaticInstrumenter;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.asm.Advice;
 import java.io.File;
@@ -43,11 +47,16 @@ public class OpenTelemetryLoader {
     public static void instrumentOpenTelemetryAgent() throws IOException {
             new ByteBuddy()
             .rebase(openTelemetryAgentClass)
-            .visit(Advice.to(PrintingAdvices.class).on(isMethod()))
+//            .visit(Advice.to(PrintingAdvices.class).on(isMethod()))
             .visit(Advice.to(OpenTelemetryAgentAdvices.class).on(
                     isMethod()
                             .and(named("agentmain"))
                             .and(takesArguments(2))
+                    )
+            )
+            .visit(Advice.to(InstallBootstrapJarAdvice.class).on(
+                    isMethod()
+                            .and(named("installBootstrapJar"))
                     )
             )
             .make()
@@ -67,7 +76,9 @@ public class OpenTelemetryLoader {
 
         for(var clazz : classesToInject) {
 
-            String clazzName = clazz.getName().split("\\.")[1];
+            String[] name = clazz.getName().split("\\.");
+
+            String clazzName = name[name.length - 1];
 
             new ByteBuddy()
                     .rebase(clazz)
