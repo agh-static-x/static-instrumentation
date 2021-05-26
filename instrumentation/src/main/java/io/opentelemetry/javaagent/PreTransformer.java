@@ -10,6 +10,7 @@ public class PreTransformer implements ClassFileTransformer {
         final Class<?> classBeingRedefined,
         final ProtectionDomain protectionDomain, final byte[] classfileBuffer)
         throws IllegalClassFormatException {
+        System.out.println("[PreTransformer] " + className);
         StaticInstrumenter.CurrentClass.set(new BytesAndName(classfileBuffer, className));
         return null;
     }
