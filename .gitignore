@@ -2,7 +2,7 @@
 /out/
 /target/
 /src/main/resources/opentelemetry-javaagent-all.jar
-/opentelemetry-javaagent-all.jar
+/new-static.jar
 /static-instrumentation.jar
 /run.sh
 /instrumentation/src/main/resources/opentelemetry-javaagent-all.jar

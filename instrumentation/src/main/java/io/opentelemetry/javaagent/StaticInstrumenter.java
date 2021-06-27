@@ -72,6 +72,7 @@ public class StaticInstrumenter {
         try {
           final Class c = Class.forName(className, false, ClassLoader.getSystemClassLoader());
           final byte[] modified = InstrumentedClasses.get(className.replace('.', '/'));
+          System.out.println("[modified] " + modified);
           if (modified == null) {
             entryIn = in.getInputStream(ent);
           } else {
